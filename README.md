@@ -4,7 +4,7 @@ Sentinel Reporter is a small userscript that adds controls to posts on Sentinel 
 
 ## Usage
 
-Follow the browser-specific instructions below. If you installed it correctly, the controls should have appeared below the title in a Sentinel report:
+Follow the browser-specific instructions below. If you installed it correctly, the controls should have appeared below the title in a Sentinel report (after you reloaded the page):
 
 ### Chrome / Firefox
 
