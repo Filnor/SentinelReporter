@@ -1,14 +1,13 @@
 // ==UserScript==
 // @name         Sentinel Reporter
-// @namespace    https://github.com/pbdevch
-// @version      0.1.0
+// @namespace    https://github.com/Filnor
+// @version      1.0.0
 // @description  Quick feedback to Natty/Sentinel directly from Sentinel's post page
-// @author       pbdevch
-// @include	     https://stackoverflow.com/*
-// @include	     https://sentinel.erwaysoftware.com/*
+// @author       Filnor
+// @include      https://sentinel.erwaysoftware.com/posts/*
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
-// @downloadURL  https://github.com/pbdevch/SentinelReporter/raw/master/SentinelReporter.user.js
+// @downloadURL  https://github.com/Filnor/SentinelReporter/raw/master/SentinelReporter.user.js
 // ==/UserScript==
 
 const room = 111347;
@@ -31,7 +30,6 @@ const feedbackString = "@Natty feedback ";
 	GM_addStyle(".sentinel-feedback-tp-icon::after {content: \"✔️\"; cursor: pointer;} .sentinel-feedback-fp-icon::after {content: \"❌\"; cursor: pointer;} /*.comment-Sentinel-feedback-icon dl {display: inline-block} .comment-Sentinel-feedback-icon.Sentinel-popup-closed dl {display:none}*/");
 
 	window.addEventListener("click", ev => {
-        console.log("tp: " + ev.target.classList.contains("sentinel-feedback-tp-icon") + " fp: " + ev.target.classList.contains("sentinel-feedback-fp-icon"));
         if (ev.target.classList.contains("sentinel-feedback-tp-icon")) {
             addFeedback();
         } else if (ev.target.classList.contains("sentinel-feedback-fp-icon")) {
@@ -53,21 +51,22 @@ function addFeedback(feedback_type = "tp") {
 		url: 'http://logs.sobotics.org/napi/api/feedback/' + answerId,
 		onload: function (samserverResponse) {
 		  if (samserverResponse.status !== 200) {
-			alert('Error while reporting: status ' + samserverResponse.status);
-			return;
+				alert('Error while reporting: status ' + samserverResponse.status);
+				return;
 		  }
-		  sendChatMessage(`${feedbackString} ${answerUrl} ${feedback_type}`);
+			sendChatMessage(`${feedbackString} ${answerUrl} ${feedback_type}`);
+			$("#feedback-line").html("Feedback sent.");
 		},
 		onerror: function (samserverResponse) {
 		  alert('Error while reporting: ' + samserverResponse.responseText);
 		}
-	  });
+		});
 }
 
 function addFeedbackButtons(preSelector) {
 	preSelector = preSelector || "";
 	preSelector = preSelector.trim() + " ";
-    $($($("div.col-md-offset-1.col-md-10 a")[0]).parent()).after('<p><b>Add feedback:</b> <a href="#" title="tp - true positive" class="sentinel-feedback-tp-icon"></a> <a href="#" title="fp - false positive" class="sentinel-feedback-fp-icon"></a> </p>');
+    $($($("div.col-md-offset-1.col-md-10 a")[0]).parent()).after('<p id="feedback-line"><b>Add feedback:</b> <a href="#" title="tp - true positive" class="sentinel-feedback-tp-icon"></a> <a href="#" title="fp - false positive" class="sentinel-feedback-fp-icon"></a> </p>');
 }
 
 function sendChatMessage(msg) {
@@ -82,7 +81,6 @@ function sendChatMessage(msg) {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         data: 'text=' + encodeURIComponent(msg.trim()) + '&fkey=' + fkey,
         onload: function (r) {
-		  console.log("Reported to Natty"); //Change tp icon color
         }
       });
     }
