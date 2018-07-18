@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sentinel Reporter
 // @namespace    https://github.com/Filnor
-// @version      1.0.0
+// @version      1.1.0
 // @description  Quick feedback to Natty/Sentinel directly from Sentinel's post page
 // @author       Filnor
 // @include      https://sentinel.erwaysoftware.com/posts/*
@@ -12,6 +12,7 @@
 
 const room = 111347;
 const test_room = 167908;
+const sebotics = 54445;
 
 const feedbackString = "@Natty feedback ";
 
@@ -70,14 +71,15 @@ function addFeedbackButtons(preSelector) {
 }
 
 function sendChatMessage(msg) {
+  var roomURL = getChatRequestURL('rooms');
   GM.xmlHttpRequest({
     method: 'GET',
-    url: 'https://chat.stackoverflow.com/rooms/' + room,
+    url: roomURL,
     onload: function (response) {
       var fkey = response.responseText.match(/hidden" value="([\dabcdef]{32})/)[1];
       GM.xmlHttpRequest({
         method: 'POST',
-        url: 'https://chat.stackoverflow.com/chats/' + room + '/messages/new',
+        url: getChatRequestURL('chats') + '/messages/new',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         data: 'text=' + encodeURIComponent(msg.trim()) + '&fkey=' + fkey,
         onload: function (r) {
@@ -85,4 +87,17 @@ function sendChatMessage(msg) {
       });
     }
   });
+}
+
+function isAUFeedback() {
+   return !!$("h3 a").attr("href").match(/https?:\/\/(www\.)?askubuntu.*/);
+}
+
+function getChatRequestURL(apiTarget) {
+    var auFeedback = isAUFeedback();
+    var result = 'https://chat.';
+    result += auFeedback ? 'stackexchange' : 'stackoverflow';
+    result += '.com/' + apiTarget + '/';
+    result += auFeedback ? sebotics : room;
+    return result;
 }
