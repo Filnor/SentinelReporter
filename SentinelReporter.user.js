@@ -49,7 +49,7 @@ function addFeedback(feedback_type = "tp") {
 
 	GM.xmlHttpRequest({
 		method: 'GET', 
-		url: 'http://logs.sobotics.org/napi/api/feedback/' + answerId,
+		url: 'http://logs.sobotics.org/napi/api/feedback/' + answerId + (isAUFeedback() ? '/au' : ''),
 		onload: function (samserverResponse) {
 		  if (samserverResponse.status !== 200) {
 				alert('Error while reporting: status ' + samserverResponse.status);
